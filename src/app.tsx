@@ -8,6 +8,7 @@ import {
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import PrivateRoute from "./components/private-router/private-router";
 import { AuthContext } from "./context/auth";
+import { socket, SocketContext } from "./context/socket";
 
 import "./app.module.scss";
 // import { ApiClient, UserIdResolvable } from "twitch";
@@ -32,13 +33,15 @@ function App() {
         <AuthContext.Provider
           value={{ accessToken, setAccessToken: setTokens }}
         >
-          <BrowserRouter>
-            <Switch>
-              <Route path="/login" component={Auth} />
-              <PrivateRoute path="/chat" component={Chat} />
-              <Redirect to="/chat" />
-            </Switch>
-          </BrowserRouter>
+          <SocketContext.Provider value={socket}>
+            <BrowserRouter>
+              <Switch>
+                <Route path="/login" component={Auth} />
+                <PrivateRoute path="/chat" component={Chat} />
+                <Redirect to="/chat" />
+              </Switch>
+            </BrowserRouter>
+          </SocketContext.Provider>
         </AuthContext.Provider>
       </ThemeProvider>
     </div>

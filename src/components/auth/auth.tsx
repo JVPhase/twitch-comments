@@ -1,12 +1,38 @@
-import React from "react";
-import { Grid, Paper, Typography } from "@material-ui/core";
+import React, { FC, useState } from "react";
+import { Button, Grid, Link, Paper, Typography } from "@material-ui/core";
 import styles from "./auth.module.scss";
+import { Redirect } from "react-router-dom";
+import { useAuth } from "../../context/auth";
+import axios from "axios";
+import { host } from "../../consts";
 
-export function Auth() {
+interface AuthProps {
+  location: any;
+}
+
+export const Auth: FC<AuthProps> = (props) => {
+  const [code, setCode] = useState("");
+  const { setAccessToken, accessToken } = useAuth();
+
+  if (!code && new URLSearchParams(window.location.search).get("code")) {
+    setCode(new URLSearchParams(window.location.search).get("code") as string);
+  }
+  console.log("code", code);
+
+  const twLogin = () => {
+    axios.post(`${host}/tw-login/${code}`).then((res) => {
+      setAccessToken(res.data.access_token);
+    });
+  };
+
+  if (accessToken) {
+    return <Redirect to={"/chat"} />;
+  }
+
   return (
     <div>
       <Grid container component="main" className={styles.auth}>
-        <Grid item xs={false} sm={4} md={7} className={styles.image} />
+        <Grid item xs={false} sm={4} md={7} className={"bg-image"} />
         <Grid
           item
           xs={12}
@@ -25,12 +51,12 @@ export function Auth() {
           >
             Twitch Comments
           </Typography>
-          <Grid container spacing={0} justify="center" direction="row">
+          <Grid container spacing={0} justifyContent="center" direction="row">
             <Grid item>
               <Grid
                 container
                 direction="column"
-                justify="center"
+                justifyContent="center"
                 spacing={2}
                 className={styles.loginForm}
               >
@@ -38,7 +64,20 @@ export function Auth() {
                   variant="elevation"
                   elevation={2}
                   className={styles.loginBackground}
-                ></Paper>
+                >
+                  {code ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={styles.buttonBlock}
+                      onClick={() => twLogin()}
+                    >
+                      Enter chat
+                    </Button>
+                  ) : (
+                    <Link href={`${host}/auth`}>Login with Twitch</Link>
+                  )}
+                </Paper>
               </Grid>
             </Grid>
           </Grid>
@@ -46,5 +85,5 @@ export function Auth() {
       </Grid>
     </div>
   );
-}
+};
 export default Auth;

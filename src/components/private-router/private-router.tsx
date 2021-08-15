@@ -8,17 +8,17 @@ interface Props {
 }
 
 const PrivateRoute: FC<Props> = ({ component: Component, ...rest }) => {
-  const { authTokens } = useAuth();
+  const { accessToken } = useAuth();
 
   return (
     <Route
       {...rest}
       render={(props) =>
-        authTokens ? (
+        accessToken ? (
           <Component {...props} />
         ) : (
           <Redirect
-            to={{ pathname: "/auth", state: { referer: props.location } }}
+            to={{ pathname: "/login", state: { referer: props.location } }}
           />
         )
       }

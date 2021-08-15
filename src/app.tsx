@@ -8,6 +8,7 @@ import {
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import PrivateRoute from "./components/private-router/private-router";
 import { AuthContext } from "./context/auth";
+import { ChannelContext } from "./context/channel";
 
 import "./app.module.scss";
 // import { ApiClient, UserIdResolvable } from "twitch";
@@ -21,6 +22,7 @@ function App() {
   // const currentScopes = ["chat:read", "chat:edit"];
   // const [code, setCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const [channel, setChannel] = useState("");
 
   const setTokens = (data: React.SetStateAction<string>) => {
     setAccessToken(data);
@@ -32,13 +34,15 @@ function App() {
         <AuthContext.Provider
           value={{ accessToken, setAccessToken: setTokens }}
         >
-          <BrowserRouter>
-            <Switch>
-              <Route path="/login" component={Auth} />
-              <PrivateRoute path="/chat" component={Chat} />
-              <Redirect to="/chat" />
-            </Switch>
-          </BrowserRouter>
+          <ChannelContext.Provider value={{ channel, setChannel }}>
+            <BrowserRouter>
+              <Switch>
+                <Route path="/login" component={Auth} />
+                <PrivateRoute path="/chat" component={Chat} />
+                <Redirect to="/chat" />
+              </Switch>
+            </BrowserRouter>
+          </ChannelContext.Provider>
         </AuthContext.Provider>
       </ThemeProvider>
     </div>

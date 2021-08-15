@@ -1,8 +1,16 @@
 import React, { FC, useState } from "react";
-import { Button, Grid, Link, Paper, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  Link,
+  Paper,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import styles from "./auth.module.scss";
 import { Redirect } from "react-router-dom";
 import { useAuth } from "../../context/auth";
+import { useChannel } from "../../context/channel";
 import axios from "axios";
 import { host } from "../../consts";
 
@@ -13,6 +21,7 @@ interface AuthProps {
 export const Auth: FC<AuthProps> = (props) => {
   const [code, setCode] = useState("");
   const { setAccessToken, accessToken } = useAuth();
+  const { setChannel, channel } = useChannel();
 
   if (!code && new URLSearchParams(window.location.search).get("code")) {
     setCode(new URLSearchParams(window.location.search).get("code") as string);
@@ -66,14 +75,35 @@ export const Auth: FC<AuthProps> = (props) => {
                   className={styles.loginBackground}
                 >
                   {code ? (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={styles.buttonBlock}
-                      onClick={() => twLogin()}
-                    >
-                      Enter chat
-                    </Button>
+                    <Grid item>
+                      <Grid container direction="column" spacing={2}>
+                        <Grid item>
+                          <TextField
+                            type="text"
+                            label="Channel id"
+                            fullWidth
+                            name="channel"
+                            variant="outlined"
+                            value={channel}
+                            required
+                            autoFocus
+                            onChange={(e) => {
+                              setChannel(e.target.value);
+                            }}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            className={styles.buttonBlock}
+                            onClick={() => twLogin()}
+                          >
+                            Enter chat
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   ) : (
                     <Link href={`${host}/auth`}>Login with Twitch</Link>
                   )}

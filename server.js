@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 
-  socket.on("handshake", async (accessToken) => {
+  socket.on("handshake", async (accessToken, channel) => {
     const authProvider = new StaticAuthProvider(
       clientId,
       accessToken,
@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
     );
     // const apiClient = new ApiClient({ authProvider });
     const chatClient = new ChatClient(authProvider, {
-      channels: ["degradki"],
+      channels: [channel],
     });
     await chatClient.connect();
     socket.emit("twitch is connected", "twitch is connected");
